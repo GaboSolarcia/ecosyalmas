@@ -10,9 +10,9 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "tfstate-rg"
-    storage_account_name = "" # filled by bootstrap script output
+    storage_account_name = "tfstateecosyalmas"
     container_name       = "tfstate"
-    key                  = "constelaciones.tfstate"
+    key                  = "ecosyalmas.tfstate"
   }
 }
 
