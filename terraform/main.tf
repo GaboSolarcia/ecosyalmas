@@ -1,3 +1,45 @@
+# ─── Current subscription (used by budget) ─────────────────────────────────────
+data "azurerm_subscription" "current" {}
+
+# ─── Budget alert — warns at $1.60 and cuts off at $2.00 ───────────────────────
+resource "azurerm_consumption_budget_subscription" "main" {
+  name            = "ecosyalmas-budget"
+  subscription_id = data.azurerm_subscription.current.id
+  amount          = var.monthly_budget_usd
+  time_grain      = "Monthly"
+
+  time_period {
+    start_date = "2026-06-01T00:00:00Z"
+  }
+
+  # Warning at 80% (~$1.60)
+  notification {
+    enabled        = true
+    threshold      = 80
+    operator       = "GreaterThan"
+    threshold_type = "Actual"
+    contact_emails = [var.alert_email]
+  }
+
+  # Hard alert at 100% ($2.00)
+  notification {
+    enabled        = true
+    threshold      = 100
+    operator       = "GreaterThan"
+    threshold_type = "Actual"
+    contact_emails = [var.alert_email]
+  }
+
+  # Forecasted to exceed budget — early warning
+  notification {
+    enabled        = true
+    threshold      = 100
+    operator       = "GreaterThan"
+    threshold_type = "Forecasted"
+    contact_emails = [var.alert_email]
+  }
+}
+
 # ─── Resource Group ────────────────────────────────────────────────────────────
 resource "azurerm_resource_group" "main" {
   name     = var.resource_group_name

@@ -39,3 +39,15 @@ variable "email_service_name" {
   type        = string
   default     = "ecosyalmas-email"
 }
+
+variable "alert_email" {
+  description = "Email address to receive budget alerts"
+  type        = string
+  default     = "gabosolarcia@gmail.com"
+}
+
+variable "monthly_budget_usd" {
+  description = "Monthly spending limit in USD"
+  type        = number
+  default     = 2
+}
