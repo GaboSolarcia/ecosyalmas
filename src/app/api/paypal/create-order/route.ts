@@ -22,24 +22,28 @@ async function getAccessToken() {
 }
 
 export async function POST(req: NextRequest) {
-  const { disponibilidadId, nombreCliente, emailCliente, telefonoCliente } =
-    await req.json();
+  const {
+    disponibilidadId,
+    disponibilidadId2,
+    duracion,
+    nombreCliente,
+    emailCliente,
+    telefonoCliente,
+  } = await req.json();
 
-  const amount = ((Number(process.env.SESSION_PRICE) || 5000) / 100).toFixed(2);
+  const basePrice = Number(process.env.SESSION_PRICE) || 5000;
+  const amount = ((basePrice * (duracion ?? 1)) / 100).toFixed(2);
   const token = await getAccessToken();
 
   const res = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       intent: "CAPTURE",
       purchase_units: [
         {
           amount: { currency_code: "USD", value: amount },
-          description: "Sesión de Constelaciones Familiares — Ecos y Almas",
+          description: `Sesión de Constelaciones Familiares ${duracion}h — Ecos y Almas`,
           custom_id: disponibilidadId,
         },
       ],
@@ -55,12 +59,13 @@ export async function POST(req: NextRequest) {
 
   const order = await res.json();
 
-  // Store client info in the order metadata via DB (linked by PayPal order id)
   const { default: clientPromise } = await import("@/lib/mongodb");
   const client = await clientPromise;
   await client.db("constelaciones").collection("paypal_pending").insertOne({
     paypalOrderId: order.id,
     disponibilidadId,
+    disponibilidadId2: disponibilidadId2 ?? null,
+    duracion: duracion ?? 1,
     nombreCliente,
     emailCliente,
     telefonoCliente,
