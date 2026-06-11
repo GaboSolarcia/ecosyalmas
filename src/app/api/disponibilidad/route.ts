@@ -8,8 +8,8 @@ export async function GET() {
   const slots = await db
     .collection<Disponibilidad>("disponibilidades")
     .find({ disponible: true, fecha: { $gte: new Date() } })
-    .sort({ fecha: 1 })
     .toArray();
+  slots.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
   return NextResponse.json(slots);
 }
 

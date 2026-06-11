@@ -16,10 +16,9 @@ async function getReservas() {
         },
       },
       { $unwind: { path: "$slot", preserveNullAndEmptyArrays: true } },
-      { $sort: { creadoEn: -1 } },
     ])
     .toArray();
-  return reservas;
+  return reservas.sort((a, b) => new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime());
 }
 
 const estadoColor: Record<string, string> = {
