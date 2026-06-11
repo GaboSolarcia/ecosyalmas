@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function EliminarSlot({ id }: { id: string }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
@@ -15,8 +13,7 @@ export default function EliminarSlot({ id }: { id: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
-    setLoading(false);
-    router.refresh();
+    window.location.reload();
   }
 
   return (

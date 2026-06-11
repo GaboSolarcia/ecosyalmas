@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function NuevoSlotForm() {
-  const router = useRouter();
   const [fecha, setFecha] = useState("");
   const [horaInicio, setHoraInicio] = useState("");
   const [horaFin, setHoraFin] = useState("");
@@ -25,7 +23,7 @@ export default function NuevoSlotForm() {
       body: JSON.stringify({ fecha, horaInicio, horaFin }),
     });
     setLoading(false);
-    if (res.ok) { setFecha(""); setHoraInicio(""); setHoraFin(""); router.refresh(); }
+    if (res.ok) { window.location.reload(); }
     else setError("Error al guardar el horario.");
   }
 

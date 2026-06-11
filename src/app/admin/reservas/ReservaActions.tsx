@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ReservaActions({
@@ -10,7 +9,6 @@ export default function ReservaActions({
   id: string;
   estado: string;
 }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function updateEstado(nuevoEstado: string) {
@@ -20,8 +18,7 @@ export default function ReservaActions({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, estado: nuevoEstado }),
     });
-    setLoading(false);
-    router.refresh();
+    window.location.reload();
   }
 
   if (estado === "cancelado") return null;
