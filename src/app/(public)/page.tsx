@@ -21,31 +21,31 @@ export default function HomePage() {
         <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-white dark:from-stone-900 to-transparent" />
 
         {/* Content on top */}
-        <div className="relative z-10">
-        <p className="text-emerald-300 font-medium tracking-widest text-sm uppercase mb-4">
-          Constelaciones Familiares
-        </p>
-        <h1 className="text-5xl sm:text-6xl font-bold text-white leading-tight max-w-3xl">
-          Sana los patrones que se repiten en tu familia
-        </h1>
-        <p className="mt-6 text-xl text-stone-200 max-w-xl leading-relaxed mx-auto">
-          Un espacio de encuentro donde lo que se ha callado por generaciones
-          puede finalmente ser visto, nombrado y sanado.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-4">
-          <Link
-            href="/reservar"
-            className="bg-emerald-700 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-emerald-600 transition-colors"
-          >
-            Agenda tu sesión
-          </Link>
-          <Link
-            href="/sobre-mi"
-            className="border border-white/40 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/10 transition-colors"
-          >
-            Conoce a Taty
-          </Link>
-        </div>
+        <div className="relative z-10 flex flex-col items-center">
+          <p className="text-emerald-300 font-medium tracking-widest text-sm uppercase mb-4">
+            Constelaciones Familiares
+          </p>
+          <h1 className="text-5xl sm:text-6xl font-bold text-white leading-tight max-w-3xl">
+            Sana los patrones que se repiten en tu familia
+          </h1>
+          <p className="mt-6 text-xl text-stone-200 max-w-xl leading-relaxed">
+            Un espacio de encuentro donde lo que se ha callado por generaciones
+            puede finalmente ser visto, nombrado y sanado.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/reservar"
+              className="bg-emerald-700 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-emerald-600 transition-colors"
+            >
+              Agenda tu sesión
+            </Link>
+            <Link
+              href="/sobre-mi"
+              className="border border-white/40 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/10 transition-colors"
+            >
+              Conoce a Taty
+            </Link>
+          </div>
         </div>
       </section>
 
