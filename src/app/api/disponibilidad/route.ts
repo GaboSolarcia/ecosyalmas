@@ -36,26 +36,18 @@ export async function DELETE(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db("constelaciones");
 
+  // Bulk delete by array of IDs
+  if (body.ids?.length) {
+    const r = await db.collection("disponibilidades").deleteMany({
+      _id: { $in: body.ids.map((id: string) => new ObjectId(id)) },
+    });
+    return NextResponse.json({ deleted: r.deletedCount });
+  }
+
   // Single slot
   if (body.id) {
     await db.collection("disponibilidades").deleteOne({ _id: new ObjectId(body.id) });
     return NextResponse.json({ deleted: 1 });
-  }
-
-  // All slots for a specific date
-  if (body.fecha) {
-    const start = new Date(body.fecha + "T00:00:00.000Z");
-    const end   = new Date(body.fecha + "T23:59:59.999Z");
-    const r = await db.collection("disponibilidades").deleteMany({ fecha: { $gte: start, $lte: end } });
-    return NextResponse.json({ deleted: r.deletedCount });
-  }
-
-  // Date range bulk delete
-  if (body.startDate && body.endDate) {
-    const start = new Date(body.startDate + "T00:00:00.000Z");
-    const end   = new Date(body.endDate   + "T23:59:59.999Z");
-    const r = await db.collection("disponibilidades").deleteMany({ fecha: { $gte: start, $lte: end } });
-    return NextResponse.json({ deleted: r.deletedCount });
   }
 
   return NextResponse.json({ error: "Parámetros inválidos" }, { status: 400 });
