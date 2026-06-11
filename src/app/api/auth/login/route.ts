@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+import { createHash } from "crypto";
 import { SignJWT } from "jose";
 
 const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!);
@@ -11,10 +11,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Credenciales incorrectas" }, { status: 401 });
   }
 
-  const hash = process.env.ADMIN_PASSWORD_HASH!;
-  const valid = await bcrypt.compare(password, hash);
-
-  if (!valid) {
+  const hash = createHash("sha256").update(password).digest("hex");
+  if (hash !== process.env.ADMIN_PASSWORD_HASH) {
     return NextResponse.json({ error: "Credenciales incorrectas" }, { status: 401 });
   }
 
