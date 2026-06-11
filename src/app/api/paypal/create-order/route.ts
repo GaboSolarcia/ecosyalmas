@@ -11,28 +11,15 @@ async function getAccessToken() {
   ).toString("base64");
   const res = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
     method: "POST",
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: { Authorization: `Basic ${credentials}`, "Content-Type": "application/x-www-form-urlencoded" },
     body: "grant_type=client_credentials",
   });
-  const data = await res.json();
-  return data.access_token as string;
+  return (await res.json()).access_token as string;
 }
 
 export async function POST(req: NextRequest) {
-  const {
-    disponibilidadId,
-    disponibilidadId2,
-    duracion,
-    nombreCliente,
-    emailCliente,
-    telefonoCliente,
-  } = await req.json();
-
-  const basePrice = Number(process.env.SESSION_PRICE) || 5000;
-  const amount = ((basePrice * (duracion ?? 1)) / 100).toFixed(2);
+  const { disponibilidadId, nombreCliente, emailCliente, telefonoCliente } = await req.json();
+  const amount = ((Number(process.env.SESSION_PRICE) || 5000) / 100).toFixed(2);
   const token = await getAccessToken();
 
   const res = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
@@ -40,13 +27,11 @@ export async function POST(req: NextRequest) {
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       intent: "CAPTURE",
-      purchase_units: [
-        {
-          amount: { currency_code: "USD", value: amount },
-          description: `Sesión de Constelaciones Familiares ${duracion}h — Ecos y Almas`,
-          custom_id: disponibilidadId,
-        },
-      ],
+      purchase_units: [{
+        amount: { currency_code: "USD", value: amount },
+        description: "Sesión de Constelaciones Familiares (2h) — Ecos y Almas",
+        custom_id: disponibilidadId,
+      }],
       payer: { email_address: emailCliente },
       application_context: {
         brand_name: "Ecos y Almas",
@@ -58,14 +43,11 @@ export async function POST(req: NextRequest) {
   });
 
   const order = await res.json();
-
   const { default: clientPromise } = await import("@/lib/mongodb");
   const client = await clientPromise;
   await client.db("constelaciones").collection("paypal_pending").insertOne({
     paypalOrderId: order.id,
     disponibilidadId,
-    disponibilidadId2: disponibilidadId2 ?? null,
-    duracion: duracion ?? 1,
     nombreCliente,
     emailCliente,
     telefonoCliente,
