@@ -3,14 +3,19 @@ import clientPromise from "@/lib/mongodb";
 import type { Disponibilidad } from "@/lib/models/types";
 
 export async function GET() {
-  const client = await clientPromise;
-  const db = client.db("constelaciones");
-  const slots = await db
-    .collection<Disponibilidad>("disponibilidades")
-    .find({ disponible: true })
-    .toArray();
-  slots.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
-  return NextResponse.json(slots);
+  try {
+    const client = await clientPromise;
+    const db = client.db("constelaciones");
+    const slots = await db
+      .collection<Disponibilidad>("disponibilidades")
+      .find({ disponible: true })
+      .toArray();
+    slots.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+    return NextResponse.json(slots);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
