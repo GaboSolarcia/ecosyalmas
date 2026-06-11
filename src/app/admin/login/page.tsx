@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -15,12 +14,20 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const result = await signIn("credentials", { email, password, redirect: false });
+
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
     setLoading(false);
-    if (result?.error) {
-      setError("Email o contraseña incorrectos.");
-    } else {
+
+    if (res.ok) {
       router.push("/admin");
+      router.refresh();
+    } else {
+      setError("Email o contraseña incorrectos.");
     }
   }
 
