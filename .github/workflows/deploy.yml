@@ -58,10 +58,8 @@ jobs:
           AZURE_STORAGE_CONTAINER:            ${{ secrets.AZURE_STORAGE_CONTAINER }}
           PAYPAL_CLIENT_SECRET:               ${{ secrets.PAYPAL_CLIENT_SECRET }}
           NEXT_PUBLIC_PAYPAL_CLIENT_ID:       ${{ secrets.NEXT_PUBLIC_PAYPAL_CLIENT_ID }}
-          SMTP_HOST:                          ${{ secrets.SMTP_HOST }}
-          SMTP_PORT:                          ${{ secrets.SMTP_PORT }}
-          SMTP_USER:                          ${{ secrets.SMTP_USER }}
-          SMTP_PASS:                          ${{ secrets.SMTP_PASS }}
+          RESEND_API_KEY:                     ${{ secrets.RESEND_API_KEY }}
           EMAIL_FROM:                         ${{ secrets.EMAIL_FROM }}
           ADMIN_EMAIL_NOTIFY:                 ${{ secrets.ADMIN_EMAIL_NOTIFY }}
           SESSION_PRICE:                      ${{ secrets.SESSION_PRICE }}
+          NEXT_PUBLIC_SESSION_PRICE:          ${{ secrets.NEXT_PUBLIC_SESSION_PRICE }}
