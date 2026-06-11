@@ -13,6 +13,113 @@ interface Slot {
 
 type Step = "slot" | "form" | "payment";
 
+const DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const MONTHS = [
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
+];
+
+function CalendarPicker({
+  availableDates,
+  selectedDate,
+  onSelectDate,
+}: {
+  availableDates: Set<string>;
+  selectedDate: string | null;
+  onSelectDate: (d: string) => void;
+}) {
+  const today = new Date();
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  function prevMonth() {
+    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
+    else setViewMonth(m => m - 1);
+  }
+  function nextMonth() {
+    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
+    else setViewMonth(m => m + 1);
+  }
+
+  function toKey(year: number, month: number, day: number) {
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+
+  const cells: (number | null)[] = [
+    ...Array(firstDay).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+
+  // Pad to complete last row
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  return (
+    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 select-none">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={prevMonth}
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 transition-colors">
+          ‹
+        </button>
+        <span className="font-semibold text-stone-900 dark:text-stone-100">
+          {MONTHS[viewMonth]} {viewYear}
+        </span>
+        <button onClick={nextMonth}
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 transition-colors">
+          ›
+        </button>
+      </div>
+
+      {/* Day headers */}
+      <div className="grid grid-cols-7 mb-2">
+        {DAYS.map((d) => (
+          <div key={d} className="text-center text-xs font-medium text-stone-400 dark:text-stone-500 py-1">
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div className="grid grid-cols-7 gap-y-1">
+        {cells.map((day, i) => {
+          if (!day) return <div key={i} />;
+
+          const key = toKey(viewYear, viewMonth, day);
+          const isAvailable = availableDates.has(key);
+          const isSelected = selectedDate === key;
+          const isPast = new Date(viewYear, viewMonth, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+          return (
+            <button
+              key={i}
+              disabled={!isAvailable || isPast}
+              onClick={() => onSelectDate(key)}
+              className={`
+                mx-auto w-9 h-9 rounded-full text-sm flex items-center justify-center transition-colors font-medium
+                ${isSelected
+                  ? "bg-emerald-700 text-white"
+                  : isAvailable && !isPast
+                  ? "bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-700 hover:text-white"
+                  : "text-stone-300 dark:text-stone-600 cursor-default"
+                }
+              `}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-xs text-stone-400 dark:text-stone-500 mt-4 text-center">
+        Los días en <span className="text-emerald-600 dark:text-emerald-400 font-medium">verde</span> tienen horarios disponibles
+      </p>
+    </div>
+  );
+}
+
 export default function BookingFlow() {
   const router = useRouter();
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -35,23 +142,14 @@ export default function BookingFlow() {
     });
   }
 
-  function formatDateShort(fecha: string) {
-    return new Date(fecha).toLocaleDateString("es-CR", {
-      weekday: "short", day: "numeric", month: "short",
-    });
-  }
-
   const slotsByDate = slots.reduce<Record<string, Slot[]>>((acc, slot) => {
-    const key = new Date(slot.fecha).toDateString();
+    const key = slot.fecha.slice(0, 10);
     if (!acc[key]) acc[key] = [];
     acc[key].push(slot);
     return acc;
   }, {});
 
-  const availableDates = Object.keys(slotsByDate).sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime()
-  );
-
+  const availableDates = new Set(Object.keys(slotsByDate));
   const slotsForDate = selectedDate ? (slotsByDate[selectedDate] ?? []) : [];
   const sessionPrice = (Number(process.env.NEXT_PUBLIC_SESSION_PRICE) || 5000) / 100;
 
@@ -84,50 +182,29 @@ export default function BookingFlow() {
         ))}
       </div>
 
-      {/* Step 1 — Date + Time on same view */}
+      {/* Step 1 — Calendar + time slots */}
       {step === "slot" && (
-        <div className="space-y-6">
-          {availableDates.length === 0 ? (
+        <div className="space-y-5">
+          {availableDates.size === 0 ? (
             <div className="text-center py-16 bg-stone-100 dark:bg-stone-800 rounded-2xl text-stone-500 dark:text-stone-400">
               <p className="font-medium mb-1">No hay fechas disponibles</p>
               <p className="text-sm">Vuelve pronto o escríbenos para coordinar.</p>
             </div>
           ) : (
             <>
-              {/* Date picker */}
-              <div>
-                <h2 className="font-semibold text-stone-800 dark:text-stone-200 mb-3">¿Qué día te queda bien?</h2>
-                <div className="flex flex-wrap gap-2">
-                  {availableDates.map((dateKey) => {
-                    const sample = slotsByDate[dateKey][0];
-                    const isSelected = selectedDate === dateKey;
-                    return (
-                      <button
-                        key={dateKey}
-                        onClick={() => {
-                          setSelectedDate(dateKey);
-                          setSelectedSlot(null);
-                        }}
-                        className={`px-4 py-2.5 rounded-xl border text-sm font-medium capitalize transition-colors ${
-                          isSelected
-                            ? "bg-emerald-700 text-white border-emerald-700"
-                            : "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 dark:hover:border-emerald-600"
-                        }`}
-                      >
-                        {formatDateShort(sample.fecha)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <CalendarPicker
+                availableDates={availableDates}
+                selectedDate={selectedDate}
+                onSelectDate={(d) => { setSelectedDate(d); setSelectedSlot(null); }}
+              />
 
               {/* Time slots — appear once a date is selected */}
               {selectedDate && (
-                <div>
-                  <h2 className="font-semibold text-stone-800 dark:text-stone-200 mb-3">
-                    ¿A qué hora? —{" "}
+                <div className="space-y-3">
+                  <h2 className="font-semibold text-stone-800 dark:text-stone-200">
+                    Horarios disponibles —{" "}
                     <span className="capitalize font-normal text-stone-500 dark:text-stone-400">
-                      {formatDate(slotsForDate[0]?.fecha)}
+                      {formatDate(selectedDate + "T12:00:00")}
                     </span>
                   </h2>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -140,7 +217,7 @@ export default function BookingFlow() {
                           className={`py-3 px-2 rounded-xl border text-sm font-medium transition-colors ${
                             isSelected
                               ? "bg-emerald-700 text-white border-emerald-700"
-                              : "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 dark:hover:border-emerald-600"
+                              : "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-500 dark:hover:border-emerald-500"
                           }`}
                         >
                           {slot.horaInicio} – {slot.horaFin}
@@ -151,11 +228,11 @@ export default function BookingFlow() {
                 </div>
               )}
 
-              {/* Continue button — only appears when both date and time are selected */}
+              {/* Continue — only when slot is picked */}
               {selectedSlot && (
-                <div className="pt-2">
-                  <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl px-5 py-3 text-sm text-emerald-800 dark:text-emerald-300 mb-4">
-                    <span className="font-medium capitalize">{formatDate(selectedSlot.fecha)}</span>
+                <div className="pt-1">
+                  <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl px-5 py-3 text-sm text-emerald-800 dark:text-emerald-300 mb-3">
+                    <span className="font-medium capitalize">{formatDate(selectedDate + "T12:00:00")}</span>
                     <span> · {selectedSlot.horaInicio} – {selectedSlot.horaFin}</span>
                   </div>
                   <button
@@ -175,7 +252,7 @@ export default function BookingFlow() {
       {step === "form" && selectedSlot && (
         <div className="space-y-6">
           <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl px-5 py-4 text-sm text-emerald-800 dark:text-emerald-300">
-            <span className="font-medium capitalize">{formatDate(selectedSlot.fecha)}</span>
+            <span className="font-medium capitalize">{formatDate(selectedDate + "T12:00:00")}</span>
             <span> · {selectedSlot.horaInicio} – {selectedSlot.horaFin}</span>
           </div>
           <div className="space-y-4">
@@ -221,7 +298,7 @@ export default function BookingFlow() {
             <div className="flex justify-between">
               <span className="text-stone-500 dark:text-stone-400">Fecha y hora</span>
               <span className="font-medium text-stone-900 dark:text-stone-100 capitalize">
-                {formatDate(selectedSlot.fecha)} · {selectedSlot.horaInicio} – {selectedSlot.horaFin}
+                {formatDate(selectedDate + "T12:00:00")} · {selectedSlot.horaInicio} – {selectedSlot.horaFin}
               </span>
             </div>
             <div className="flex justify-between border-t border-stone-200 dark:border-stone-700 pt-2 mt-2">
