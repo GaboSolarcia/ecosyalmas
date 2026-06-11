@@ -5,14 +5,11 @@ import type { Disponibilidad } from "@/lib/models/types";
 export async function GET() {
   const client = await clientPromise;
   const db = client.db("constelaciones");
-  const now = new Date();
-  const all = await db
+  const slots = await db
     .collection<Disponibilidad>("disponibilidades")
     .find({ disponible: true })
     .toArray();
-  const slots = all
-    .filter((s) => new Date(s.fecha) >= now)
-    .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+  slots.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
   return NextResponse.json(slots);
 }
 
