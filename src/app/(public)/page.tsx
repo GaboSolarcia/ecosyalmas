@@ -17,6 +17,9 @@ export default function HomePage() {
         {/* Dark overlay so text stays readable */}
         <div className="absolute inset-0 bg-black/50 dark:bg-black/65" />
 
+        {/* Gradient fade to next section */}
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-white dark:from-stone-900 to-transparent" />
+
         {/* Content on top */}
         <div className="relative z-10">
         <p className="text-emerald-300 font-medium tracking-widest text-sm uppercase mb-4">
