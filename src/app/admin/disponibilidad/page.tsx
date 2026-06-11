@@ -5,7 +5,7 @@ import EliminarSlot from "./EliminarSlot";
 async function getSlots() {
   const client = await clientPromise;
   const db = client.db("constelaciones");
-  const slots = await db.collection("disponibilidades").find({ fecha: { $gte: new Date() } }).toArray();
+  const slots = await db.collection("disponibilidades").find({}).toArray();
   return slots.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
 }
 
