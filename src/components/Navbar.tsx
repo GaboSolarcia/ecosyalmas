@@ -7,14 +7,16 @@ export default function Navbar() {
     <header className="fixed top-0 inset-x-0 z-50 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur border-b border-stone-200 dark:border-stone-800">
       <nav className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <Image
-            src="/logo.jpeg"
-            alt="Ecos y Almas"
-            width={140}
-            height={40}
-            className="h-10 w-auto object-contain dark:brightness-90"
-            priority
-          />
+          <div className="h-12 w-12 rounded-full overflow-hidden ring-2 ring-emerald-200 dark:ring-emerald-900">
+            <Image
+              src="/logo.jpeg"
+              alt="Ecos y Almas"
+              width={96}
+              height={96}
+              className="h-full w-full object-cover scale-125 dark:brightness-90"
+              priority
+            />
+          </div>
         </Link>
         <div className="flex items-center gap-4 text-sm font-medium text-stone-600 dark:text-stone-400">
           <Link href="/sobre-mi" className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
