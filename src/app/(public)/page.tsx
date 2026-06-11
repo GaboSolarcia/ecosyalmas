@@ -4,27 +4,27 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="min-h-[90vh] flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-stone-50 to-emerald-50">
-        <p className="text-emerald-700 font-medium tracking-widest text-sm uppercase mb-4">
+      <section className="min-h-[90vh] flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-stone-50 to-emerald-50 dark:from-stone-950 dark:to-stone-900">
+        <p className="text-emerald-700 dark:text-emerald-400 font-medium tracking-widest text-sm uppercase mb-4">
           Constelaciones Familiares
         </p>
-        <h1 className="text-5xl sm:text-6xl font-bold text-stone-900 leading-tight max-w-3xl">
+        <h1 className="text-5xl sm:text-6xl font-bold text-stone-900 dark:text-stone-50 leading-tight max-w-3xl">
           Sana los patrones que se repiten en tu familia
         </h1>
-        <p className="mt-6 text-xl text-stone-600 max-w-xl leading-relaxed">
+        <p className="mt-6 text-xl text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
           Un espacio de encuentro donde lo que se ha callado por generaciones
           puede finalmente ser visto, nombrado y sanado.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4">
           <Link
             href="/reservar"
-            className="bg-emerald-700 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-emerald-800 transition-colors"
+            className="bg-emerald-700 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-emerald-600 transition-colors"
           >
             Agenda tu sesión
           </Link>
           <Link
             href="/sobre-mi"
-            className="border border-stone-300 text-stone-700 px-8 py-4 rounded-full text-lg font-medium hover:bg-stone-100 transition-colors"
+            className="border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 px-8 py-4 rounded-full text-lg font-medium hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           >
             Conoce a Taty
           </Link>
@@ -32,12 +32,12 @@ export default function HomePage() {
       </section>
 
       {/* ¿Qué son las Constelaciones? */}
-      <section className="py-24 px-6 bg-white">
+      <section className="py-24 px-6 bg-white dark:bg-stone-900">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-stone-900 text-center mb-4">
+          <h2 className="text-3xl font-bold text-stone-900 dark:text-stone-50 text-center mb-4">
             ¿Qué son las Constelaciones Familiares?
           </h2>
-          <p className="text-center text-stone-500 mb-16 max-w-xl mx-auto">
+          <p className="text-center text-stone-500 dark:text-stone-400 mb-16 max-w-xl mx-auto">
             Un método terapéutico creado por Bert Hellinger que trabaja con los
             vínculos invisibles que nos unen a nuestra familia.
           </p>
@@ -61,10 +61,10 @@ export default function HomePage() {
             ].map((item) => (
               <div key={item.title} className="text-center">
                 <div className="text-4xl mb-4">{item.icon}</div>
-                <h3 className="font-semibold text-stone-900 text-lg mb-2">
+                <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-lg mb-2">
                   {item.title}
                 </h3>
-                <p className="text-stone-500 leading-relaxed">{item.body}</p>
+                <p className="text-stone-500 dark:text-stone-400 leading-relaxed">{item.body}</p>
               </div>
             ))}
           </div>
@@ -72,9 +72,9 @@ export default function HomePage() {
       </section>
 
       {/* ¿Para quién es? */}
-      <section className="py-24 px-6 bg-emerald-50">
+      <section className="py-24 px-6 bg-emerald-50 dark:bg-stone-950">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-stone-900 text-center mb-12">
+          <h2 className="text-3xl font-bold text-stone-900 dark:text-stone-50 text-center mb-12">
             ¿Para quién es una sesión?
           </h2>
           <div className="grid sm:grid-cols-2 gap-6">
@@ -88,10 +88,10 @@ export default function HomePage() {
             ].map((item) => (
               <div
                 key={item}
-                className="flex items-start gap-3 bg-white rounded-2xl p-5 shadow-sm"
+                className="flex items-start gap-3 bg-white dark:bg-stone-900 rounded-2xl p-5 shadow-sm border border-stone-100 dark:border-stone-800"
               >
-                <span className="text-emerald-600 mt-0.5">✓</span>
-                <p className="text-stone-700">{item}</p>
+                <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">✓</span>
+                <p className="text-stone-700 dark:text-stone-300">{item}</p>
               </div>
             ))}
           </div>
@@ -99,7 +99,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA final */}
-      <section className="py-24 px-6 bg-stone-900 text-center">
+      <section className="py-24 px-6 bg-stone-900 dark:bg-black text-center">
         <h2 className="text-3xl font-bold text-white mb-4">
           ¿Listo para dar el primer paso?
         </h2>
