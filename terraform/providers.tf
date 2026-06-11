@@ -17,6 +17,11 @@ terraform {
 }
 
 provider "azurerm" {
+  # Explicitly use Service Principal — never fall back to Azure CLI
+  use_cli         = false
+  use_msi         = false
+  use_oidc        = false
+
   features {
     resource_group {
       prevent_deletion_if_contains_resources = false
