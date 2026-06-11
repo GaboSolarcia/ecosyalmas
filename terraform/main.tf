@@ -48,12 +48,12 @@ resource "azurerm_resource_group" "main" {
 
 # ─── Cosmos DB (MongoDB API — Free Tier) ───────────────────────────────────────
 resource "azurerm_cosmosdb_account" "db" {
-  name                = var.cosmos_account_name
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  offer_type          = "Standard"
-  kind                = "MongoDB"
-  free_tier_enabled   = true  # MUST be set at creation — cannot change later
+  name                 = var.cosmos_account_name
+  location             = azurerm_resource_group.main.location
+  resource_group_name  = azurerm_resource_group.main.name
+  offer_type           = "Standard"
+  kind                 = "MongoDB"
+  free_tier_enabled    = true # MUST be set at creation — cannot change later
   mongo_server_version = "7.0"
 
   capabilities {
@@ -120,8 +120,8 @@ resource "azurerm_email_communication_service" "main" {
 }
 
 resource "azurerm_email_communication_service_domain" "main" {
-  name             = "AzureManagedDomain"
-  email_service_id = azurerm_email_communication_service.main.id
+  name              = "AzureManagedDomain"
+  email_service_id  = azurerm_email_communication_service.main.id
   domain_management = "AzureManaged"
 }
 
