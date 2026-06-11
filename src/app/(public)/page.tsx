@@ -1,17 +1,31 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="min-h-[90vh] flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-stone-50 to-emerald-50 dark:from-stone-950 dark:to-stone-900">
-        <p className="text-emerald-700 dark:text-emerald-400 font-medium tracking-widest text-sm uppercase mb-4">
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        {/* Background image */}
+        <Image
+          src="/constelaciones.jpg"
+          alt="Constelaciones Familiares"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Dark overlay so text stays readable */}
+        <div className="absolute inset-0 bg-black/50 dark:bg-black/65" />
+
+        {/* Content on top */}
+        <div className="relative z-10">
+        <p className="text-emerald-300 font-medium tracking-widest text-sm uppercase mb-4">
           Constelaciones Familiares
         </p>
-        <h1 className="text-5xl sm:text-6xl font-bold text-stone-900 dark:text-stone-50 leading-tight max-w-3xl">
+        <h1 className="text-5xl sm:text-6xl font-bold text-white leading-tight max-w-3xl">
           Sana los patrones que se repiten en tu familia
         </h1>
-        <p className="mt-6 text-xl text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
+        <p className="mt-6 text-xl text-stone-200 max-w-xl leading-relaxed mx-auto">
           Un espacio de encuentro donde lo que se ha callado por generaciones
           puede finalmente ser visto, nombrado y sanado.
         </p>
@@ -24,10 +38,11 @@ export default function HomePage() {
           </Link>
           <Link
             href="/sobre-mi"
-            className="border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 px-8 py-4 rounded-full text-lg font-medium hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="border border-white/40 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/10 transition-colors"
           >
             Conoce a Taty
           </Link>
+        </div>
         </div>
       </section>
 

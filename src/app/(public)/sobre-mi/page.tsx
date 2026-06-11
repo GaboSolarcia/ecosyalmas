@@ -30,12 +30,12 @@ export default function SobreMiPage() {
               Hola, soy Taty Garcia
             </h1>
             <p className="text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
-              Soy constelladora certificada con formación en Constelaciones
+              Soy constelladora certificada con formación en Constelaciones<br></br>
               Familiares (Argentina) Facilitador sistematico en Psicodinamicas Sistematicas basado en
-              Constelaciones Familiares (Venezuela) Registros Akashico 1 y 2 (Argentina)
-              Formacion Integral Desarrollo Humano y tecnicas de Sanacion (Costa Rica)
-              Consejeria Matrimonial 1 y 2 (Costa Rica).
-              Tel: (506) 8998-0174
+              Constelaciones Familiares (Venezuela) Registros Akashico 1 y 2 (Argentina)<br></br>
+              Formacion Integral Desarrollo Humano y tecnicas de Sanacion (Costa Rica)<br></br>
+              Consejeria Matrimonial 1 y 2 (Costa Rica).<br></br>
+              Tel: (506) 8998-0174<br></br>
               Correo de contacto: tatyanagn@hotmail.com
 
             </p>
@@ -69,7 +69,7 @@ export default function SobreMiPage() {
               },
               {
                 title: "Modalidad",
-                body: "Sesiones individuales presenciales en Costa Rica o virtuales para cualquier parte del mundo.",
+                body: "Sesiones individuales o grupales presenciales en Costa Rica o virtuales para cualquier parte del mundo.",
               },
             ].map((item) => (
               <div
