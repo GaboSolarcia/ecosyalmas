@@ -25,7 +25,7 @@ export async function enviarConfirmacionCliente(
         <h2>¡Gracias, ${nombre}!</h2>
         <p>Tu sesión ha sido reservada para el <strong>${fecha}</strong> a las <strong>${hora}</strong>.</p>
         <p>Me pondré en contacto contigo pronto para confirmar los detalles.</p>
-        <p>Con amor,<br/>Tu constelladora</p>
+        <p>Con amor,<br/>Tu consteladora</p>
       </div>
     `,
   })

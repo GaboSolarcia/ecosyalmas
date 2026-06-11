@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,21 +12,32 @@ export default function SobreMiPage() {
     <>
       <section className="py-24 px-6 bg-gradient-to-b from-emerald-50 to-stone-50 dark:from-stone-900 dark:to-stone-950">
         <div className="max-w-5xl mx-auto grid sm:grid-cols-2 gap-16 items-center">
-          <div className="w-full aspect-square max-w-sm mx-auto rounded-3xl bg-stone-200 dark:bg-stone-800 flex items-center justify-center text-stone-400 dark:text-stone-500 text-sm">
-            Foto de Taty
+          <div className="w-full aspect-square max-w-sm mx-auto rounded-3xl overflow-hidden shadow-lg">
+            <Image
+              src="/taty.jpeg"
+              alt="Taty Garcia — Consteladora"
+              width={500}
+              height={500}
+              className="h-full w-full object-cover"
+              priority
+            />
           </div>
           <div>
             <p className="text-emerald-700 dark:text-emerald-400 font-medium tracking-widest text-sm uppercase mb-3">
-              Tu constelladora
+              Tu consteladora
             </p>
             <h1 className="text-4xl font-bold text-stone-900 dark:text-stone-50 mb-6">
-              Hola, soy Taty Garnaj
+              Hola, soy Taty Garcia
             </h1>
             <p className="text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
               Soy constelladora certificada con formación en Constelaciones
-              Familiares Sistémicas según el método de Bert Hellinger. Acompaño
-              a personas y familias en procesos de sanación y reconciliación con
-              su historia.
+              Familiares (Argentina) Facilitador sistematico en Psicodinamicas Sistematicas basado en
+              Constelaciones Familiares (Venezuela) Registros Akashico 1 y 2 (Argentina)
+              Formacion Integral Desarrollo Humano y tecnicas de Sanacion (Costa Rica)
+              Consejeria Matrimonial 1 y 2 (Costa Rica).
+              Tel: (506) 8998-0174
+              Correo de contacto: tatyanagn@hotmail.com
+
             </p>
             <p className="text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
               Mi camino con las constelaciones comenzó como una búsqueda
@@ -33,7 +45,7 @@ export default function SobreMiPage() {
               descubrir el amor y el orden que ya existe en su sistema familiar.
             </p>
             <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
-              Ofrezco sesiones individuales en modalidad presencial y virtual
+              Ofrezco sesiones individuales y grupales en modalidad presencial y virtual
               desde Costa Rica.
             </p>
           </div>
