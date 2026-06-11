@@ -11,13 +11,13 @@ interface Slot {
   horaFin: string;
 }
 
-type Step = "fecha" | "hora" | "form" | "payment";
+type Step = "slot" | "form" | "payment";
 
 export default function BookingFlow() {
   const router = useRouter();
   const [slots, setSlots] = useState<Slot[]>([]);
   const [loading, setLoading] = useState(true);
-  const [step, setStep] = useState<Step>("fecha");
+  const [step, setStep] = useState<Step>("slot");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [form, setForm] = useState({ nombre: "", email: "", telefono: "" });
@@ -35,7 +35,12 @@ export default function BookingFlow() {
     });
   }
 
-  // Group slots by date
+  function formatDateShort(fecha: string) {
+    return new Date(fecha).toLocaleDateString("es-CR", {
+      weekday: "short", day: "numeric", month: "short",
+    });
+  }
+
   const slotsByDate = slots.reduce<Record<string, Slot[]>>((acc, slot) => {
     const key = new Date(slot.fecha).toDateString();
     if (!acc[key]) acc[key] = [];
@@ -57,8 +62,8 @@ export default function BookingFlow() {
   const inputClass =
     "w-full border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-stone-400 dark:placeholder:text-stone-600";
 
-  const steps: Step[] = ["fecha", "hora", "form", "payment"];
-  const stepLabels = ["Fecha", "Horario", "Tus datos", "Pago"];
+  const steps: Step[] = ["slot", "form", "payment"];
+  const stepLabels = ["Fecha y hora", "Tus datos", "Pago"];
 
   return (
     <div className="space-y-8">
@@ -79,65 +84,94 @@ export default function BookingFlow() {
         ))}
       </div>
 
-      {/* Step 1 — Pick a date */}
-      {step === "fecha" && (
-        <div className="space-y-3">
-          <h2 className="font-semibold text-stone-800 dark:text-stone-200">¿Qué día te queda bien?</h2>
+      {/* Step 1 — Date + Time on same view */}
+      {step === "slot" && (
+        <div className="space-y-6">
           {availableDates.length === 0 ? (
             <div className="text-center py-16 bg-stone-100 dark:bg-stone-800 rounded-2xl text-stone-500 dark:text-stone-400">
               <p className="font-medium mb-1">No hay fechas disponibles</p>
               <p className="text-sm">Vuelve pronto o escríbenos para coordinar.</p>
             </div>
           ) : (
-            availableDates.map((dateKey) => {
-              const count = slotsByDate[dateKey].length;
-              const sample = slotsByDate[dateKey][0];
-              return (
-                <button
-                  key={dateKey}
-                  onClick={() => { setSelectedDate(dateKey); setStep("hora"); }}
-                  className="w-full text-left px-5 py-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 hover:border-emerald-400 dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-stone-800 transition-colors"
-                >
-                  <span className="font-medium text-stone-900 dark:text-stone-100 capitalize">
-                    {formatDate(sample.fecha)}
-                  </span>
-                  <span className="ml-2 text-sm text-emerald-600 dark:text-emerald-400">
-                    {count} horario{count > 1 ? "s" : ""} disponible{count > 1 ? "s" : ""}
-                  </span>
-                </button>
-              );
-            })
+            <>
+              {/* Date picker */}
+              <div>
+                <h2 className="font-semibold text-stone-800 dark:text-stone-200 mb-3">¿Qué día te queda bien?</h2>
+                <div className="flex flex-wrap gap-2">
+                  {availableDates.map((dateKey) => {
+                    const sample = slotsByDate[dateKey][0];
+                    const isSelected = selectedDate === dateKey;
+                    return (
+                      <button
+                        key={dateKey}
+                        onClick={() => {
+                          setSelectedDate(dateKey);
+                          setSelectedSlot(null);
+                        }}
+                        className={`px-4 py-2.5 rounded-xl border text-sm font-medium capitalize transition-colors ${
+                          isSelected
+                            ? "bg-emerald-700 text-white border-emerald-700"
+                            : "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 dark:hover:border-emerald-600"
+                        }`}
+                      >
+                        {formatDateShort(sample.fecha)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Time slots — appear once a date is selected */}
+              {selectedDate && (
+                <div>
+                  <h2 className="font-semibold text-stone-800 dark:text-stone-200 mb-3">
+                    ¿A qué hora? —{" "}
+                    <span className="capitalize font-normal text-stone-500 dark:text-stone-400">
+                      {formatDate(slotsForDate[0]?.fecha)}
+                    </span>
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {slotsForDate.map((slot) => {
+                      const isSelected = selectedSlot?._id === slot._id;
+                      return (
+                        <button
+                          key={slot._id}
+                          onClick={() => setSelectedSlot(slot)}
+                          className={`py-3 px-2 rounded-xl border text-sm font-medium transition-colors ${
+                            isSelected
+                              ? "bg-emerald-700 text-white border-emerald-700"
+                              : "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 dark:hover:border-emerald-600"
+                          }`}
+                        >
+                          {slot.horaInicio} – {slot.horaFin}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Continue button — only appears when both date and time are selected */}
+              {selectedSlot && (
+                <div className="pt-2">
+                  <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl px-5 py-3 text-sm text-emerald-800 dark:text-emerald-300 mb-4">
+                    <span className="font-medium capitalize">{formatDate(selectedSlot.fecha)}</span>
+                    <span> · {selectedSlot.horaInicio} – {selectedSlot.horaFin}</span>
+                  </div>
+                  <button
+                    onClick={() => setStep("form")}
+                    className="w-full bg-emerald-700 text-white py-4 rounded-xl font-medium hover:bg-emerald-600 transition-colors text-lg"
+                  >
+                    Continuar
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
 
-      {/* Step 2 — Pick a time slot */}
-      {step === "hora" && selectedDate && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-stone-800 dark:text-stone-200">
-              Elige tu horario — <span className="capitalize">{formatDate(slotsByDate[selectedDate][0].fecha)}</span>
-            </h2>
-            <button onClick={() => setStep("fecha")} className="text-sm text-stone-400 hover:text-stone-600 dark:hover:text-stone-300">
-              ← Cambiar fecha
-            </button>
-          </div>
-          {slotsForDate.map((slot) => (
-            <button
-              key={slot._id}
-              onClick={() => { setSelectedSlot(slot); setStep("form"); }}
-              className="w-full text-left px-5 py-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 hover:border-emerald-400 dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-stone-800 transition-colors"
-            >
-              <span className="font-medium text-stone-900 dark:text-stone-100">
-                {slot.horaInicio} – {slot.horaFin}
-              </span>
-              <span className="ml-2 text-sm text-stone-500 dark:text-stone-400">2 horas</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Step 3 — Contact form */}
+      {/* Step 2 — Contact form */}
       {step === "form" && selectedSlot && (
         <div className="space-y-6">
           <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl px-5 py-4 text-sm text-emerald-800 dark:text-emerald-300">
@@ -160,7 +194,7 @@ export default function BookingFlow() {
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex gap-3">
-            <button onClick={() => setStep("hora")}
+            <button onClick={() => setStep("slot")}
               className="flex-1 border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 py-3 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
               Atrás
             </button>
@@ -176,7 +210,7 @@ export default function BookingFlow() {
         </div>
       )}
 
-      {/* Step 4 — Payment */}
+      {/* Step 3 — Payment */}
       {step === "payment" && selectedSlot && (
         <div className="space-y-6">
           <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl p-5 space-y-2 text-sm">
