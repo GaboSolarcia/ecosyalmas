@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -41,12 +40,10 @@ export default function Navbar() {
           >
             Agenda tu sesión
           </Link>
-          <ThemeToggle />
         </div>
 
-        {/* Mobile: theme + hamburger */}
-        <div className="flex md:hidden items-center gap-1">
-          <ThemeToggle />
+        {/* Mobile: hamburger */}
+        <div className="flex md:hidden items-center">
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
