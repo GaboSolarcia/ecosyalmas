@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import clientPromise from "@/lib/mongodb";
 import type { Disponibilidad } from "@/lib/models/types";
 
