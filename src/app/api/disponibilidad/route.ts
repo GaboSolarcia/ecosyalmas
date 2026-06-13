@@ -1,34 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Db, ObjectId as ObjId } from "mongodb";
+import { ObjectId as ObjId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import type { Disponibilidad } from "@/lib/models/types";
-
-// Costa Rica is UTC-6 (no DST)
-const CR_OFFSET_MS = 6 * 60 * 60 * 1000;
-
-function slotStartUtc(fecha: Date, horaInicio: string): Date {
-  const [h, m] = horaInicio.split(":").map(Number);
-  // fecha is midnight UTC for the given date; horaInicio is CR local time
-  return new Date(fecha.getTime() + (h * 60 + m) * 60_000 + CR_OFFSET_MS);
-}
-
-async function deleteExpiredSlots(db: Db) {
-  const cutoff = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const available = await db
-    .collection<Disponibilidad>("disponibilidades")
-    .find({ disponible: true })
-    .toArray();
-
-  const expiredIds = available
-    .filter((s) => slotStartUtc(new Date(s.fecha), s.horaInicio) < cutoff)
-    .map((s) => new ObjId(s._id.toString()));
-
-  if (expiredIds.length > 0) {
-    await db.collection("disponibilidades").deleteMany({
-      _id: { $in: expiredIds },
-    });
-  }
-}
+import { deleteExpiredSlots } from "@/lib/cleanup";
 
 export async function GET() {
   try {

@@ -1,10 +1,12 @@
 import clientPromise from "@/lib/mongodb";
 import NuevoSlotForm from "./NuevoSlotForm";
 import SlotList from "./SlotList";
+import { deleteExpiredSlots } from "@/lib/cleanup";
 
 async function getSlots() {
   const client = await clientPromise;
   const db = client.db("constelaciones");
+  await deleteExpiredSlots(db);
   const slots = await db.collection("disponibilidades").find({}).toArray();
   return slots.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
 }
