@@ -274,18 +274,18 @@ export default function BookingFlow() {
   return (
     <div className="space-y-8">
       {/* Step indicators */}
-      <div className="flex items-center justify-center gap-3 text-sm font-medium">
+      <div className="flex items-center justify-center gap-1 sm:gap-3 text-sm font-medium">
         {steps.map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+          <div key={s} className="flex items-center gap-1 sm:gap-2">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
               step === s ? "bg-emerald-700 text-white"
               : i < steps.indexOf(step) ? "bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-300"
               : "bg-stone-200 dark:bg-stone-800 text-stone-400"
             }`}>{i + 1}</div>
-            <span className={step === s ? "text-stone-900 dark:text-stone-100" : "text-stone-400 dark:text-stone-500"}>
+            <span className={`hidden sm:inline ${step === s ? "text-stone-900 dark:text-stone-100" : "text-stone-400 dark:text-stone-500"}`}>
               {stepLabels[i]}
             </span>
-            {i < steps.length - 1 && <span className="text-stone-300 dark:text-stone-600">›</span>}
+            {i < steps.length - 1 && <span className="text-stone-300 dark:text-stone-600 text-xs">›</span>}
           </div>
         ))}
       </div>
@@ -429,9 +429,9 @@ export default function BookingFlow() {
               <span className="text-stone-500 dark:text-stone-400">Sesión</span>
               <span className="font-medium text-stone-900 dark:text-stone-100">Constelaciones Familiares · 2h</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-stone-500 dark:text-stone-400">Fecha y hora</span>
-              <span className="font-medium text-stone-900 dark:text-stone-100 capitalize">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <span className="text-stone-500 dark:text-stone-400 shrink-0">Fecha y hora</span>
+              <span className="font-medium text-stone-900 dark:text-stone-100 capitalize sm:text-right">
                 {formatDate(selectedDate + "T12:00:00")} · {selectedSlot.horaInicio} – {selectedSlot.horaFin}
               </span>
             </div>

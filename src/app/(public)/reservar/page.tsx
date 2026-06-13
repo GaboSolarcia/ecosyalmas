@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 
 export default function ReservarPage() {
   return (
-    <section className="py-20 px-6">
+    <section className="py-12 sm:py-20 px-4 sm:px-6">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-stone-900 mb-2 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-50 mb-2 text-center">
           Agenda tu sesión
         </h1>
-        <p className="text-stone-500 text-center mb-12">
+        <p className="text-stone-500 dark:text-stone-400 text-center mb-12">
           Elige un horario disponible, completa tus datos y realiza el pago para
           confirmar tu reserva.
         </p>
