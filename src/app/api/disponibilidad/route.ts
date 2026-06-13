@@ -1,12 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
-
+import { Db, ObjectId as ObjId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import type { Disponibilidad } from "@/lib/models/types";
+
+// Costa Rica is UTC-6 (no DST)
+const CR_OFFSET_MS = 6 * 60 * 60 * 1000;
+
+function slotStartUtc(fecha: Date, horaInicio: string): Date {
+  const [h, m] = horaInicio.split(":").map(Number);
+  // fecha is midnight UTC for the given date; horaInicio is CR local time
+  return new Date(fecha.getTime() + (h * 60 + m) * 60_000 + CR_OFFSET_MS);
+}
+
+async function deleteExpiredSlots(db: Db) {
+  const cutoff = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const available = await db
+    .collection<Disponibilidad>("disponibilidades")
+    .find({ disponible: true })
+    .toArray();
+
+  const expiredIds = available
+    .filter((s) => slotStartUtc(new Date(s.fecha), s.horaInicio) < cutoff)
+    .map((s) => new ObjId(s._id.toString()));
+
+  if (expiredIds.length > 0) {
+    await db.collection("disponibilidades").deleteMany({
+      _id: { $in: expiredIds },
+    });
+  }
+}
 
 export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("constelaciones");
+
+    await deleteExpiredSlots(db);
+
     const slots = await db
       .collection<Disponibilidad>("disponibilidades")
       .find({ disponible: true })
@@ -38,21 +68,18 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const body = await req.json();
-  const { ObjectId } = await import("mongodb");
   const client = await clientPromise;
   const db = client.db("constelaciones");
 
-  // Bulk delete by array of IDs
   if (body.ids?.length) {
     const r = await db.collection("disponibilidades").deleteMany({
-      _id: { $in: body.ids.map((id: string) => new ObjectId(id)) },
+      _id: { $in: body.ids.map((id: string) => new ObjId(id)) },
     });
     return NextResponse.json({ deleted: r.deletedCount });
   }
 
-  // Single slot
   if (body.id) {
-    await db.collection("disponibilidades").deleteOne({ _id: new ObjectId(body.id) });
+    await db.collection("disponibilidades").deleteOne({ _id: new ObjId(body.id) });
     return NextResponse.json({ deleted: 1 });
   }
 
